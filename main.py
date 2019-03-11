@@ -7,7 +7,7 @@ nltk.download('wordnet')
 
 parsed_lines = []
 lemmatizer = WordNetLemmatizer()
-with open("devsetwithlabels/dev.txt") as file:
+with open("devsetwithlabels/dev.txt", encoding = "UTF-8") as file:
     replacer = re.compile("^d+\t([^\t]+)\t([^\t]+)\t([^\t+])?[ \t](angry|sad|other|)$")
     next(file)
     for line in file:
