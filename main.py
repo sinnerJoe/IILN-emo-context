@@ -27,18 +27,27 @@ def line_to_dict(line):
 
     lemmatized_replies = []
     for reply in pos_replies:
-        objs = list(map(lambda arg: { "speech-part": arg[1], "word": arg[0]}, reply))
+        objs = list(map(lambda arg: { "pos": arg[1], "word": arg[0]}, reply))
         lemmatized_replies.append(objs)
     res["replies"] = lemmatized_replies
-    print(res["replies"])
+    # print(res["replies"])
     res["emotion"] = line[3][0]
     return res
+
+def lemmatize(line_dict):
+    for reply in line_dict["replies"]:
+        for wordObj in reply:
+            print(wordObj)
+            wordObj["lemma"] = lemmatizer.lemmatize(wordObj["word"])
+
 
 
 
 parsed_lines = map(lambda quadruplet: list(map(nltk.word_tokenize, quadruplet)), parsed_lines)
 parsed_lines = list(map(line_to_dict, parsed_lines))
 
+for line in parsed_lines:
+    lemmatize(line)
 
 
 with open("parsed_dataset.json", "w") as dataset:
