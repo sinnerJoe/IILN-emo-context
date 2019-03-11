@@ -2,6 +2,8 @@ import nltk
 from nltk import WordNetLemmatizer
 import re
 import json
+
+import utils
 # nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
 
@@ -38,9 +40,7 @@ def lemmatize(line_dict):
     for reply in line_dict["replies"]:
         for wordObj in reply:
             print(wordObj)
-            wordObj["lemma"] = lemmatizer.lemmatize(wordObj["word"])
-
-
+            wordObj["lemma"] = lemmatizer.lemmatize(wordObj["word"].lower(), utils.get_wordnet_pos(wordObj["pos"]))
 
 
 parsed_lines = map(lambda quadruplet: list(map(nltk.word_tokenize, quadruplet)), parsed_lines)
