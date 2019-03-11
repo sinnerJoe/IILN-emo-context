@@ -23,7 +23,12 @@ with open("devsetwithlabels/dev.txt") as file:
 def line_to_dict(line):
     res = dict()
     pos_replies = map(nltk.pos_tag, line)
-    lemmatized_replies = [print(w,p) for reply in pos_replies for w,p in reply if reply[0]]
+    # lemmatized_replies = [(w,p) for reply in pos_replies for w,p in reply if reply[0]]
+
+    lemmatized_replies = []
+    for reply in pos_replies:
+        objs = list(map(lambda arg: { "speech-part": arg[1], "word": arg[0]}, reply))
+        lemmatized_replies.append(objs)
     res["replies"] = lemmatized_replies
     print(res["replies"])
     res["emotion"] = line[3][0]
