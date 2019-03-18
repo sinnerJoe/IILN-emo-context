@@ -3,7 +3,7 @@ from nltk import WordNetLemmatizer
 import re
 import json
 
-import utility_lib
+import utility_lib as utils
 # nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
 
@@ -54,7 +54,10 @@ for line in parsed_lines:
     for reply in line["replies"]:
         for wordObj in reply:
             print(wordObj)
-            utils.populate_synonym_db(wordObj)
+            utils.populate_synonym_db(wordObj, synonymDB, line["emotion"])
+
+with open("frequencies.json", "w") as freq:
+    json.dump(synonymDB, freq, indent = 4)
 
 with open("parsed_dataset.json", "w") as dataset:
     json.dump(parsed_lines, dataset, indent=4)

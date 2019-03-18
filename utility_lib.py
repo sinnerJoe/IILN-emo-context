@@ -19,7 +19,7 @@ def populate_synonym_db(wordObj, database: dict, emotion):
     synonyms = wordnet.synsets(wordObj["lemma"])
     lemmas = chain.from_iterable([word.lemma_names() for word in synonyms])
     wordObj["synonyms"] = list(set(lemmas))
-    add_lemma(wordObj["lemm"], wordObj["synonyms"], database, emotion)
+    add_lemma(wordObj["lemma"], wordObj["synonyms"], database, emotion)
 
 
 def add_lemma(lemma, synonyms, database: dict, emotion):
@@ -36,7 +36,7 @@ def add_lemma(lemma, synonyms, database: dict, emotion):
         if len(presentSynonyms) == 0:
             counter = {
                 "angry": 0,
-                "other": 0,
+                "others": 0,
                 "happy": 0,
                 "sad": 0
             }
