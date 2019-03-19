@@ -1,1 +1,15 @@
 de pregatit arhitectura aplicatiei (schema)
+
+
+algoritmul LDA pentru identificarea topic-ilor
+nltk NER (name entity recognition)
+
+anafora - referinta la o entitate aparuta in alta parte in text
+
+lexical collocation - cuvintele care se afla pe langa alte cuvinte (spre exemplu din preajma verbului)
+
+LESK algorithm
+
+daniela.gifu33@gmail.com
+
+http://www.nltk.org/howto/wsd.html

@@ -15,8 +15,28 @@ def get_wordnet_pos(pos):
     return tag_dict.get(pos[0], wordnet.NOUN)
 
 
+def find_best_synonyms(reply):
+    sentence = 
+    for wordObj in reply:
+        synonyms = wordnet.synsets(wordObj["lemma"])
+        for i in synonyms:
+            print("------", i, "-------")
+            print(i.definition())
+            print(i.lemma_names())
+
+def lesk(word, sentence):
+    context = set(sentence)
+    max_overlap = 0
+    synonyms = wordnet.synsets(word)
+    best_sense = None if len(synonyms) == 0 else synonyms[0]
+    if len(synonyms) <= 1:
+        return best_sense
+    
+
+
 def populate_synonym_db(wordObj, database: dict, emotion):
     synonyms = wordnet.synsets(wordObj["lemma"])
+    
     lemmas = chain.from_iterable([word.lemma_names() for word in synonyms])
     wordObj["synonyms"] = list(set(lemmas))
     add_lemma(wordObj["lemma"], wordObj["synonyms"], database, emotion)
