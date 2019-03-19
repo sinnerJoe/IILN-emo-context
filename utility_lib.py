@@ -15,14 +15,14 @@ def get_wordnet_pos(pos):
     return tag_dict.get(pos[0], wordnet.NOUN)
 
 
-def find_best_synonyms(reply):
-    sentence = 
-    for wordObj in reply:
-        synonyms = wordnet.synsets(wordObj["lemma"])
-        for i in synonyms:
-            print("------", i, "-------")
-            print(i.definition())
-            print(i.lemma_names())
+# def find_best_synonyms(reply):
+#     sentence = 
+#     for wordObj in reply:
+#         synonyms = wordnet.synsets(wordObj["lemma"])
+#         for i in synonyms:
+#             print("------", i, "-------")
+#             print(i.definition())
+#             print(i.lemma_names())
 
 def lesk(word, sentence):
     context = set(sentence)
