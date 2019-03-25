@@ -3,6 +3,7 @@ import math
 import json
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
+import re
 
 def get_wordnet_pos(word):
     tag = nltk.pos_tag([word])[0][1][0].upper()
