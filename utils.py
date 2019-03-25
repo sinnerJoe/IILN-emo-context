@@ -93,8 +93,10 @@ def tf_idf(tweets_dicts):
 # nlp = en_core_web_sm.load()
 
 def ner(tweets_dicts):
+    labels= {"sentences":0,}
     for dic in tweets_dicts:
-        freq = {}
+        labels["sentences"] += 1
+        
         [tweet1, tweet2, tweet3, aux] = dic["replies"]
         sentence = []
         for word_dic in tweet1:
@@ -102,9 +104,12 @@ def ner(tweets_dicts):
        
         for chunk in nltk.ne_chunk(sentence):
             if hasattr(chunk, 'label') and chunk.label:
-                name_value = ' '.join(child[0] for child in chunk.leaves())
-                print(name_value, chunk.label())
-       
+                # name_value = ' '.join(child[0] for child in chunk.leaves())
+                # print(name_value, chunk.label())
+                if chunk.label() in labels:
+                    labels[chunk.label()] += 1
+                else:
+                    labels[chunk.label()] = 1
         
         sentence = []
         for word_dic in tweet2:
@@ -112,18 +117,25 @@ def ner(tweets_dicts):
        
         for chunk in nltk.ne_chunk(sentence):
             if hasattr(chunk, 'label') and chunk.label:
-                name_value = ' '.join(child[0] for child in chunk.leaves())
-                print(name_value, chunk.label())
-
+                # name_value = ' '.join(child[0] for child in chunk.leaves())
+                # print(name_value, chunk.label())
+                if chunk.label() in labels:
+                    labels[chunk.label()] += 1
+                else:
+                    labels[chunk.label()] = 1
         sentence = []
         for word_dic in tweet3:
             sentence.append( (word_dic["word"], word_dic["pos"]) )
        
         for chunk in nltk.ne_chunk(sentence):
             if hasattr(chunk, 'label') and chunk.label:
-                name_value = ' '.join(child[0] for child in chunk.leaves())
-                print(name_value, chunk.label())
-    
+                # name_value = ' '.join(child[0] for child in chunk.leaves())
+                # print(name_value, chunk.label())
+                if chunk.label() in labels:
+                    labels[chunk.label()] += 1
+                else:
+                    labels[chunk.label()] = 1
+    print(labels)   
               
 
 def simplified_lesk(word, context):
