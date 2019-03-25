@@ -3,7 +3,7 @@ import nltk
 from nltk import WordNetLemmatizer
 import re
 import json
-
+from nltk.wsd import lesk
 import utility_lib as utils
 # nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
@@ -48,14 +48,23 @@ def lemmatize(line_dict):
 parsed_lines = map(lambda quadruplet: list(map(nltk.word_tokenize, quadruplet)), parsed_lines)
 parsed_lines = list(map(line_to_dict, parsed_lines))
 
+
+
+
 synonymDB = dict()
 
 for line in parsed_lines:
     lemmatize(line)
+    utils.remove_frequent_words(line["replies"])
+    utils.remove_punctuation(line)
+    utils.best_synonym(line["replies"])
+    utils.detect_capslock(line)
     for reply in line["replies"]:
         for wordObj in reply:
             print(wordObj)
             utils.populate_synonym_db(wordObj, synonymDB, line["emotion"])
+
+    
 
 with open("frequencies.json", "w") as freq:
     json.dump(synonymDB, freq, indent = 4)
