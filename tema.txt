@@ -11,5 +11,8 @@ lexical collocation - cuvintele care se afla pe langa alte cuvinte (spre exemplu
 LESK algorithm
 
 daniela.gifu33@gmail.com
+diana.trandabat@gmail.com
 
 http://www.nltk.org/howto/wsd.html
+
+Check Beca?

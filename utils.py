@@ -3,6 +3,11 @@ import math
 import json
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
+from nltk.corpus import wordnet as wn
+from nltk.wsd import lesk
+
+# nltk.download('maxent_ne_chunker')
+# nltk.download('words')
 
 def get_wordnet_pos(word):
     tag = nltk.pos_tag([word])[0][1][0].upper()
@@ -80,4 +85,96 @@ def tf_idf(tweets_dicts):
     print(tf)
 
 
-tf_idf(json.load(open("parsed_dataset.json", "rt")))
+#tf_idf(json.load(open("parsed_dataset.json", "rt")))
+# import spacy
+# from spacy import displacy
+# from collections import Counter
+# import en_core_web_sm
+# nlp = en_core_web_sm.load()
+
+def ner(tweets_dicts):
+    for dic in tweets_dicts:
+        freq = {}
+        [tweet1, tweet2, tweet3, aux] = dic["replies"]
+        sentence = []
+        for word_dic in tweet1:
+            sentence.append( (word_dic["word"], word_dic["pos"]) )
+       
+        for chunk in nltk.ne_chunk(sentence):
+            if hasattr(chunk, 'label') and chunk.label:
+                name_value = ' '.join(child[0] for child in chunk.leaves())
+                print(name_value, chunk.label())
+       
+        
+        sentence = []
+        for word_dic in tweet2:
+            sentence.append( (word_dic["word"], word_dic["pos"]) )
+       
+        for chunk in nltk.ne_chunk(sentence):
+            if hasattr(chunk, 'label') and chunk.label:
+                name_value = ' '.join(child[0] for child in chunk.leaves())
+                print(name_value, chunk.label())
+
+        sentence = []
+        for word_dic in tweet3:
+            sentence.append( (word_dic["word"], word_dic["pos"]) )
+       
+        for chunk in nltk.ne_chunk(sentence):
+            if hasattr(chunk, 'label') and chunk.label:
+                name_value = ' '.join(child[0] for child in chunk.leaves())
+                print(name_value, chunk.label())
+    
+              
+
+def simplified_lesk(word, context):
+    max_overlap = -1
+    best_sense = ""
+    best_signature = ""
+    for sense in wn.synsets(word):
+        signature = set(sense.definition().split()) 
+        overlap = len(signature & context) 
+        if max_overlap < overlap:
+            max_overlap = overlap
+            best_sense = sense.lemmas()[0].name()
+            best_signature = sense.definition()
+    
+    
+    max_overlap = -1
+    best_synonym = ""
+    for sense in wn.synsets(best_sense):
+        if sense.lemmas()[0].name().lower() != best_sense.lower():
+            signature = set(sense.definition().split())
+            overlap = len(signature & set(best_signature.split()))
+            if max_overlap < overlap:
+                max_overlap = overlap
+                best_synonym = sense.lemmas()[0].name()
+
+    return best_signature, best_synonym
+
+
+def use_lesk(tweets_dicts):
+    for dic in tweets_dicts:
+        [tweet1, tweet2, tweet3, aux] = dic["replies"]
+        sentence = []
+        for word_dic in tweet1:
+            if word_dic["pos"][0] == "N":
+                sentence.append(word_dic["lemma"])
+        for word in sentence:
+            print(word, simplified_lesk(word, set(sentence)))
+        
+        sentence = []
+        for word_dic in tweet2:
+            if word_dic["pos"][0] == "N":
+                sentence.append(word_dic["lemma"])
+        for word in sentence:
+            print(word, simplified_lesk(word, set(sentence)))
+        
+        sentence = []
+        for word_dic in tweet3:
+            if word_dic["pos"][0] == "N":
+                sentence.append(word_dic["lemma"])
+        for word in sentence:
+            print(word, simplified_lesk(word, set(sentence)))
+
+#use_lesk(json.load(open("parsed_dataset.json", "rt")))
+ner(json.load(open("parsed_dataset.json", "rt")))
