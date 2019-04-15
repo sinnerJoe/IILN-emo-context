@@ -5,6 +5,7 @@ import re
 import json
 from nltk.wsd import lesk
 import utility_lib as utils
+import utils as utlis2
 
  
 # nltk.download('averaged_perceptron_tagger')
@@ -25,8 +26,6 @@ with open("devsetwithlabels/dev.txt", encoding="utf8") as file:
             split[-1] = split[-1][:-1]
         parsed_lines.append(split)
 
-# print(parsed_lines)
-
 
 def line_to_dict(line):
     res = dict()
@@ -45,10 +44,14 @@ def line_to_dict(line):
 def lemmatize(line_dict):
     for reply in line_dict["replies"]:
         for wordObj in reply:
-            print(wordObj)
+            # print(wordObj)
             wordObj["lemma"] = lemmatizer.lemmatize(wordObj["word"].lower(), utils.get_wordnet_pos(wordObj["pos"]))
 
 
+
+for tweets in parsed_lines:
+    tweet1, tweet2, tweet3, emo = tweets
+    print(utlis2.emo_detection(tweet1), utlis2.emo_detection(tweet2), utlis2.emo_detection(tweet3), emo)
 
 parsed_lines = map(lambda quadruplet: list(map(nltk.word_tokenize, quadruplet)), parsed_lines)
 parsed_lines = list(map(line_to_dict, parsed_lines))
@@ -67,7 +70,7 @@ for line in parsed_lines:
     utils.ner_words(line)
     for reply in line["replies"]:
         for wordObj in reply:
-            print(wordObj)
+            # print(wordObj)
             utils.populate_synonym_db(wordObj, synonymDB, line["emotion"])
 
 utils.calculate_dictionary(parsed_lines)

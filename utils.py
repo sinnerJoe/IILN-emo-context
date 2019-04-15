@@ -1,6 +1,7 @@
 import nltk
 import math
 import json
+import requests
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
 from nltk.corpus import wordnet as wn
@@ -188,5 +189,16 @@ def use_lesk(tweets_dicts):
         for word in sentence:
             print(word, simplified_lesk(word, set(sentence)))
 
-#use_lesk(json.load(open("parsed_dataset.json", "rt")))
-ner(json.load(open("parsed_dataset.json", "rt")))
+def emo_detection(text):
+    response = requests.post(url = "http://text-processing.com/api/sentiment/", data = {"text": text}).json()["probability"]
+    maxi = max( [response["neg"], response["neutral"], response["pos"]])
+    for key, value in response.items():
+        if value == maxi:
+            emo = key
+    return emo
+    
+
+# use_lesk(json.load(open("parsed_dataset.json", "rt")))
+# ner(json.load(open("parsed_dataset.json", "rt")))
+
+#emo_detection("Today I'm very happy")
