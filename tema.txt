@@ -22,3 +22,18 @@ http://www.nltk.org/howto/wsd.html
 De scris in referat pas cu pas cine a facut, rezultatele categorizarii, exemple din corpus
 *Word sense disambiguation
 Trebuie descrisa metodologia in cuvinte non-tehnice
+
+folosirea pachetulu WEKA ( din laboratorul 8 )
++ emotiile
+
+TODO:
+* Structura unitara a referatului
+  * Task
+  * Echipa
+  * Descriere task
+  * De citit si referentiat bibliografia ce s-a facut pana la noi
+  * 2 tipuri de arhitectura
+        a) arhitectura de la laborator
+        b) arhitectura finala fara chestiile inutile
+  * de completat cu date statistice
+  * o scurta concluzie
