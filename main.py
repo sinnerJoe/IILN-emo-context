@@ -7,11 +7,14 @@ from nltk.wsd import lesk
 import utility_lib as utils
 # nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
+nltk.download('maxent_ne_chunker')
+nltk.download('words')
+
 
 parsed_lines = []
 lemmatizer = WordNetLemmatizer()
 with open("devsetwithlabels/dev.txt", encoding="utf8") as file:
-    replacer = re.compile("^d+\t([^\t]+)\t([^\t]+)\t([^\t+])?[ \t](angry|sad|other|)$")
+    replacer = re.compile("^d+\t([^\t]+)\t([^\t]+)\t([^\t]+)?[ \t](angry|sad|other|happy)$")
     next(file)
     for line in file:
         split = line.split("\t")
@@ -59,6 +62,7 @@ for line in parsed_lines:
     utils.remove_punctuation(line)
     utils.best_synonym(line["replies"])
     utils.detect_capslock(line)
+    utils.ner_words(line)
     for reply in line["replies"]:
         for wordObj in reply:
             print(wordObj)

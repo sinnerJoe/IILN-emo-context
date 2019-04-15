@@ -6,6 +6,7 @@ from nltk.wsd import lesk
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
 from itertools import chain
+# from gensim import models, corpora
 import re
 
 def get_wordnet_pos(pos):
@@ -19,12 +20,12 @@ def get_wordnet_pos(pos):
 def best_synonym(replies):
     words = tuple([i for reply in replies for i in reply])
     words_str = tuple([i["lemma"] for i in words])
-    print(words_str)
+    # print(words_str)
     for i in range(0, len(words)):
-        print(words[i])
+        # print(words[i])
         try:
             best_syn = lesk(words_str, words_str[i], get_wordnet_pos(words[i]["pos"]))
-            print(best_syn)
+            # print(best_syn)
             lemma_names = best_syn.lemma_names()
             if isinstance(lemma_names, list):
                 words[i]["best_syn"] = lemma_names[0]
@@ -75,7 +76,10 @@ def add_lemma(lemma, synonyms, database: dict, emotion):
 
 
 
-frequent_words = { "a", "an", "he", "she", "it", "you", "be", "the", "i", "u"}
+frequent_words = { 
+    "a", "an", "he", "she", "it", "you", "be", "the", "i", "u", "to", "from", "of", "your", "his", "her"
+    
+}
 
 def remove_frequent_words(replies):
     for reply in replies:
@@ -97,12 +101,37 @@ def detect_capslock(line):
     line["capslock"] = total / 3 < i
         
 punct_re = re.compile(r"^(\?|\.|,| |\(|\))+$")
+
 def remove_punctuation(line):
     for reply in line["replies"]:
         i = 0
         while i < len(reply):
             if punct_re.match(reply[i]["word"]):
                 del reply[i]
-                print("PUNCTUATION REMOVED")
+                # print("PUNCTUATION REMOVED")
             else:
                 i+=1
+
+
+def ner_words(line):
+    replies = line["replies"]
+    for reply in replies:
+        tagged_words = [(wordObj["word"][0]+ wordObj["word"][1:], wordObj["pos"]) for wordObj in reply]
+        ner_tags = nltk.ne_chunk(tagged_words)
+        for chunk in ner_tags:
+            if hasattr(chunk, "label") and chunk.label:
+                name_value = ' '.join(child[0] for child in chunk.leaves())
+                print("------------------------------------")
+                print(name_value, chunk.label())
+                for i in range(0, len(reply)):
+                    wordObj = reply[i]
+                    if wordObj['word'] == name_value:   
+                        wordObj["ner_tag"] = chunk.label()
+                        break
+
+
+def reply_to_array_of_strings(reply):
+    return list(map(lambda wordObj: wordObj["word"]))
+
+# def lda_topic_detect(line):
+#     dictionary = corpora.Dictionary( ))

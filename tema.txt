@@ -16,3 +16,9 @@ diana.trandabat@gmail.com
 http://www.nltk.org/howto/wsd.html
 
 Check Beca?
+https://profs.info.uaic.ro/~daniela.gifu/
+http://www.nltk.org/howto/wsd.html
+
+De scris in referat pas cu pas cine a facut, rezultatele categorizarii, exemple din corpus
+*Word sense disambiguation
+Trebuie descrisa metodologia in cuvinte non-tehnice
