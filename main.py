@@ -5,6 +5,8 @@ import re
 import json
 from nltk.wsd import lesk
 import utility_lib as utils
+
+ 
 # nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
 nltk.download('maxent_ne_chunker')
@@ -68,7 +70,10 @@ for line in parsed_lines:
             print(wordObj)
             utils.populate_synonym_db(wordObj, synonymDB, line["emotion"])
 
-    
+utils.calculate_dictionary(parsed_lines)
+
+for line in parsed_lines:
+    utils.lda_topic_detect(line)
 
 with open("frequencies.json", "w") as freq:
     json.dump(synonymDB, freq, indent = 4)

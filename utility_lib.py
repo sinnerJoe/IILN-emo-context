@@ -6,8 +6,15 @@ from nltk.wsd import lesk
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
 from itertools import chain
-# from gensim import models, corpora
+import gensim
+from gensim import corpora 
 import re
+import pickle
+
+nltk.download("stopwords")
+
+stop_words = set(nltk.corpus.stopwords.words('english'))
+
 
 def get_wordnet_pos(pos):
     tag_dict = {"J": wordnet.ADJ,
@@ -131,7 +138,44 @@ def ner_words(line):
 
 
 def reply_to_array_of_strings(reply):
-    return list(map(lambda wordObj: wordObj["word"]))
+    return list(map(lambda wordObj: wordObj["lemma"], reply))
 
-# def lda_topic_detect(line):
-#     dictionary = corpora.Dictionary( ))
+
+dictionary = None
+ldamodel = None
+possible_topics = None
+def calculate_dictionary(train_data):
+    global dictionary
+    global ldamodel
+    global possible_topics
+    all_lines = [ list(map(reply_to_array_of_strings, i["replies"])) for i in train_data]
+    all_words = []
+    for line in all_lines:
+        all_words.extend(line)
+    dictionary = corpora.Dictionary(all_words)
+
+    all_words = [ dictionary.doc2bow(word) for word in all_words ]
+    ldamodel = gensim.models.ldamodel.LdaModel(all_words, num_topics=20, id2word=dictionary, passes=15)
+    possible_topics = ldamodel.print_topics(20)
+    print("Possible topics", possible_topics)
+    # corpus = [dictionary.doc2bow(text) for text in all_words]
+    # pickle.dump(corpus, open('corpus.pkl', 'wb'))
+    dictionary.save('dictionary.gensim')
+
+
+def flatten(lst):
+    res = []
+    for el in lst:
+        res.extend(el)
+
+def lda_topic_detect(instance):
+    global possible_topics
+    words = list(map(reply_to_array_of_strings, instance["replies"]))
+    new_doc = list(map(dictionary.doc2bow, words))
+    # print(ldamodel.get_document_topics(new_doc))
+    top_index = ldamodel.get_document_topics(new_doc)[0]
+    # best_topics = sorted(key=(lambda el: el[0]), iterable=top_index, reverse=True)[:4]
+    top_index.sort(key=lambda el: el[0], reverse=True)
+    index, prob = top_index[0]
+    instance["topics"] = possible_topics[index]
+
