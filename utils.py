@@ -191,6 +191,17 @@ def use_lesk(tweets_dicts):
 
 def emo_detection(text):
     response = requests.post(url = "http://text-processing.com/api/sentiment/", data = {"text": text}).json()["probability"]
+    # response = requests.post("https://japerk-text-processing.p.rapidapi.com/sentiment/",
+    #                         headers={
+    #                             "X-RapidAPI-Host": "japerk-text-processing.p.rapidapi.com",
+    #                             "X-RapidAPI-Key": "ddac0762b2mshf2a1e97a045686ep1ee811jsn9c89f803eddf",
+    #                             "Content-Type": "application/x-www-form-urlencoded"
+    #                         },
+    #                         data={
+    #                             "language": "english",
+    #                             "text": text
+    #                         }
+    #                         ).json()
     maxi = max( [response["neg"], response["neutral"], response["pos"]])
     for key, value in response.items():
         if value == maxi:
