@@ -37,3 +37,21 @@ TODO:
         b) arhitectura finala fara chestiile inutile
   * de completat cu date statistice
   * o scurta concluzie
+
+
+pentru validarea xml-ului se face un dtd(defineste structura elementelor, atributele etc.) 
+si un xsd(definirea constrangerilor si relatiilor dintre atribute/id-uri/altceva)
+semnificatiile valorilor din xml sunt descrise intr-un tagset
+
+
+pistol.ionutcristian@gmail.com <---- send result here
+
+===DEADLINE 26.04.2019===
+*de eliminat stop-words din engleza
+*de trimis pana la sfarsitul saptamanii fisierul cu date, si fisierele pentru validare
+*de scris un script pentru validarea datelor de intrare pentru tf-idf (pentru fisierul parsed_dataset.json)
+*de utilizat dictionare pentru transformarea jargonului in limbaj literar
+*de transformat cuvintele cu un caracter repetat > 3 ori la rand in 
+      cuvinte cu o ocurenta a caracterului
+*de utilizat gazeteer din NER pentru a gasi cuvintele proprii scrise cu litera mica
+*de transformat emoji-urile in cuvinte

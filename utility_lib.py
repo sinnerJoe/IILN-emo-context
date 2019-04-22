@@ -16,6 +16,23 @@ nltk.download("stopwords")
 stop_words = set(nltk.corpus.stopwords.words('english'))
 
 
+def reduce_repeated_chars(word):
+    new_word = ""
+    i=0
+    while i < len(word):
+        reps = 1
+        for j in range(i+1, len(word)):
+            if word[i] == word[j]:
+                reps += 1
+            else:
+                break
+        if reps == 2:
+            new_word += word[i:i+2]
+        else: 
+            new_word += word[i]
+        i+=reps    
+    return new_word
+
 def get_wordnet_pos(pos):
     tag_dict = {"J": wordnet.ADJ,
                 "N": wordnet.NOUN,
