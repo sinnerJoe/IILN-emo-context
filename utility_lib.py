@@ -18,7 +18,7 @@ stop_words = set(nltk.corpus.stopwords.words('english'))
 
 def reduce_repeated_chars(word):
     new_word = ""
-    i=0
+    i = 0
     while i < len(word):
         reps = 1
         for j in range(i+1, len(word)):
