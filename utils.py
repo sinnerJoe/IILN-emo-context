@@ -1,7 +1,6 @@
 import nltk
 import math
 import json
-import requests
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
 from nltk.corpus import wordnet as wn
@@ -189,6 +188,7 @@ def use_lesk(tweets_dicts):
         for word in sentence:
             print(word, simplified_lesk(word, set(sentence)))
 
+<<<<<<< HEAD
 def emo_detection(text):
     response = requests.post(url = "http://text-processing.com/api/sentiment/", data = {"text": text}).json()["probability"]
     # response = requests.post("https://japerk-text-processing.p.rapidapi.com/sentiment/",
@@ -213,3 +213,7 @@ def emo_detection(text):
 # ner(json.load(open("parsed_dataset.json", "rt")))
 
 #emo_detection("Today I'm very happy")
+=======
+#use_lesk(json.load(open("parsed_dataset.json", "rt")))
+ner(json.load(open("parsed_dataset.json", "rt")))
+>>>>>>> parent of 54f1add... emo detection
