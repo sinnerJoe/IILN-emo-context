@@ -33,7 +33,7 @@ def line_to_dict(line, sentiments):
 
     lemmatized_replies = []
     for reply in pos_replies:
-        objs = list(map(lambda arg: { "pos": arg[1], "word": arg[0]}, reply))
+        objs = list(map(lambda arg: { "pos": arg[1], "word": utils.reduce_repeated_chars(arg[0]) }, reply))
         lemmatized_replies.append(objs)
     res["replies"] = lemmatized_replies
     # print(res["replies"])
@@ -67,9 +67,9 @@ threads = []
 
 for i in range(0, len(parsed_lines)):
 
-    t = threading.Thread(target=requestEmotions, args=(parsed_lines[i][:3], i, detected_emotions))
-    t.start()
-    threads.append(t)
+    # t = threading.Thread(target=requestEmotions, args=(parsed_lines[i][:3], i, detected_emotions))
+    # t.start()
+    # threads.append(t)
     
 
     tweets_processed += 1
