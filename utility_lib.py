@@ -16,6 +16,23 @@ nltk.download("stopwords")
 stop_words = set(nltk.corpus.stopwords.words('english'))
 
 
+def reduce_repeated_chars(word):
+    new_word = ""
+    i = 0
+    while i < len(word):
+        reps = 1
+        for j in range(i+1, len(word)):
+            if word[i] == word[j]:
+                reps += 1
+            else:
+                break
+        if reps == 2:
+            new_word += word[i:i+2]
+        else: 
+            new_word += word[i]
+        i+=reps    
+    return new_word
+
 def get_wordnet_pos(pos):
     tag_dict = {"J": wordnet.ADJ,
                 "N": wordnet.NOUN,
@@ -39,11 +56,16 @@ def best_synonym(replies):
                  
         except:
             print("Except ", words_str[i])
+
+words_without_synononyms = 0
 def populate_synonym_db(wordObj, database: dict, emotion):
+    global words_without_synononyms
     synonyms = wordnet.synsets(wordObj["lemma"])
     
     lemmas = chain.from_iterable([word.lemma_names() for word in synonyms])
     wordObj["synonyms"] = list(set(lemmas))
+    if len(wordObj["synonyms"]) == 0:
+        words_without_synononyms += 1
     add_lemma(wordObj["lemma"], wordObj["synonyms"], database, emotion)
 
 
@@ -87,17 +109,20 @@ frequent_words = {
     "a", "an", "he", "she", "it", "you", "be", "the", "i", "u", "to", "from", "of", "your", "his", "her"
     
 }
-
+total_frequent_words_removed = 0
 def remove_frequent_words(replies):
+    global total_frequent_words_removed 
     for reply in replies:
         i = 0
         while i < len(reply):
             if reply[i]["lemma"] in frequent_words or reply[i]["word"].lower() in frequent_words:
                 del reply[i]
+                total_frequent_words_removed += 1
             else:
                 i+=1
-
+capslock_detected = 0
 def detect_capslock(line):
+    global capslock_detected
     i = 0
     total = 0
     for reply in line["replies"]:
@@ -106,15 +131,21 @@ def detect_capslock(line):
             if word["word"] == word["word"].upper():
                 i+=1
     line["capslock"] = total / 3 < i
+    if total / 3 < i:
+        capslock_detected += 1
         
 punct_re = re.compile(r"^(\?|\.|,| |\(|\))+$")
 
+
+punctuation_removed = 0
 def remove_punctuation(line):
+    global punctuation_removed
     for reply in line["replies"]:
         i = 0
         while i < len(reply):
             if punct_re.match(reply[i]["word"]):
                 del reply[i]
+                punctuation_removed += 1
                 # print("PUNCTUATION REMOVED")
             else:
                 i+=1
@@ -140,33 +171,41 @@ def ner_words(line):
 def reply_to_array_of_strings(reply):
     return list(map(lambda wordObj: wordObj["lemma"], reply))
 
-
+total_words = 0
+total_long_words = 0
+total_tweet_nr = 0
 dictionary = None
 ldamodel = None
 possible_topics = None
 def calculate_dictionary(train_data):
+    global total_words, total_long_words, total_tweet_nr
     global dictionary
     global ldamodel
     global possible_topics
-    all_lines = [ list(map(reply_to_array_of_strings, i["replies"])) for i in train_data]
+    all_lines = [ flatten(map(reply_to_array_of_strings, i["replies"])) for i in train_data]
     all_words = []
+    total_tweet_nr = len(train_data) * 3
     for line in all_lines:
-        all_words.extend(line)
+        # all_words.append([word for word in line if len(word) > 4])
+        sentence = []
+        for word in line:
+            total_words+=1
+            if len(word) > 4:
+                sentence.append(word)
+                total_long_words += 1
+        all_words.append(sentence)
     dictionary = corpora.Dictionary(all_words)
-
     all_words = [ dictionary.doc2bow(word) for word in all_words ]
     ldamodel = gensim.models.ldamodel.LdaModel(all_words, num_topics=20, id2word=dictionary, passes=15)
     possible_topics = ldamodel.print_topics(20)
     print("Possible topics", possible_topics)
-    # corpus = [dictionary.doc2bow(text) for text in all_words]
-    # pickle.dump(corpus, open('corpus.pkl', 'wb'))
-    dictionary.save('dictionary.gensim')
 
 
 def flatten(lst):
     res = []
     for el in lst:
         res.extend(el)
+    return res
 
 def lda_topic_detect(instance):
     global possible_topics
@@ -177,5 +216,15 @@ def lda_topic_detect(instance):
     # best_topics = sorted(key=(lambda el: el[0]), iterable=top_index, reverse=True)[:4]
     top_index.sort(key=lambda el: el[0], reverse=True)
     index, prob = top_index[0]
-    instance["topics"] = possible_topics[index]
+    instance["topics"] = possible_topics[index][1]
 
+def print_metrics():
+    global total_frequent_words_removed, total_words, total_tweet_nr, punctuation_removed, capslock_detected, total_long_words
+    global words_without_synononyms, capslock_detected
+    print("Punctuation removed: ", punctuation_removed)
+    print("Total frequent words removed: ", total_frequent_words_removed)
+    print("Total words: ", total_words)
+    print("Total long words: ", total_long_words)
+    print("Words without synonyms: ", words_without_synononyms)
+    print("Capslock detected: ", capslock_detected)
+    print("Total tweets: ", total_tweet_nr)
