@@ -7,12 +7,12 @@ from nltk.wsd import lesk
 import utility_lib as utils
 import utils as utlis2
 import threading
-#use gazeteer for 
+#use gazeteer 
 # nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
 nltk.download('maxent_ne_chunker')
 nltk.download('words')
-
+print("new print")
 parsed_lines = []
 lemmatizer = WordNetLemmatizer()
 with open("devsetwithlabels/dev.txt", encoding="utf8") as file:
