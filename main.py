@@ -49,10 +49,12 @@ def lemmatize(line_dict):
 
 
 
+emo_count = {"happy" : 0, "sad" : 0, "angry":0, "others":0}
 for tweets in parsed_lines:
     tweet1, tweet2, tweet3, emo = tweets
-    print(utlis2.emo_detection(tweet1), utlis2.emo_detection(tweet2), utlis2.emo_detection(tweet3), emo)
-
+    emo_count[emo] += 1
+    #print(utlis2.emo_detection(tweet1), utlis2.emo_detection(tweet2), utlis2.emo_detection(tweet3), emo)
+print(len(parsed_lines), emo_count)
 parsed_lines = map(lambda quadruplet: list(map(nltk.word_tokenize, quadruplet)), parsed_lines)
 parsed_lines = list(map(line_to_dict, parsed_lines))
 
