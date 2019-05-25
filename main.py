@@ -30,10 +30,11 @@ with open("devsetwithlabels/dev.txt", encoding="utf8") as file:
 
 def line_to_dict(line):
     res = dict()
-    pos_replies = map(nltk.pos_tag, line)
+    pos_replies = map(nltk.pos_tag, line[:-1])
     # lemmatized_replies = [(w,p) for reply in pos_replies for w,p in reply if reply[0]]
 
     lemmatized_replies = []
+    # print("LINE SIZE: ", line[3])
     for reply in pos_replies:
         objs = list(map(lambda arg: { "pos": arg[1], "word": utils.reduce_repeated_chars(arg[0]) }, reply))
         lemmatized_replies.append(objs)
