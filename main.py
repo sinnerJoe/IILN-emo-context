@@ -15,7 +15,7 @@ nltk.download('words')
 
 parsed_lines = []
 lemmatizer = WordNetLemmatizer()
-with open("devsetwithlabels/dev.txt", encoding="utf8") as file:
+with open("devsetwithlabels/dev.txt", encoding="utf-8") as file:
     replacer = re.compile("^d+\t([^\t]+)\t([^\t]+)\t([^\t]+)?[ \t](angry|sad|other|happy)$")
     next(file)
     for line in file:
@@ -30,16 +30,14 @@ with open("devsetwithlabels/dev.txt", encoding="utf8") as file:
 
 def line_to_dict(line):
     res = dict()
-    pos_replies = map(nltk.pos_tag, line[:-1])
-    # lemmatized_replies = [(w,p) for reply in pos_replies for w,p in reply if reply[0]]
+    replies = [utils.tokenize_emojis(reply) for reply in line[:-1]]
+    pos_replies = map(nltk.pos_tag, replies)
 
     lemmatized_replies = []
-    # print("LINE SIZE: ", line[3])
     for reply in pos_replies:
         objs = list(map(lambda arg: { "pos": arg[1], "word": utils.reduce_repeated_chars(arg[0]) }, reply))
         lemmatized_replies.append(objs)
     res["replies"] = lemmatized_replies
-    # print(res["replies"])
     res["emotion"] = line[3][0]
     return res
 
@@ -76,8 +74,8 @@ utils.calculate_dictionary(parsed_lines)
 for line in parsed_lines:
     utils.lda_topic_detect(line)
 
-with open("frequencies.json", "w") as freq:
-    json.dump(synonymDB, freq, indent = 4)
+with open("frequencies.json", "w", encoding="utf-8") as freq:
+    json.dump(synonymDB, freq, indent = 4, ensure_ascii=False)
 
-with open("parsed_dataset.json", "w") as dataset:
-    json.dump(parsed_lines, dataset, indent=4)
+with open("parsed_dataset.json", "w", encoding="utf-8") as dataset:
+    json.dump(parsed_lines, dataset, indent=4, ensure_ascii=False)
