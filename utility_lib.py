@@ -10,11 +10,17 @@ import gensim
 from gensim import corpora 
 import re
 import pickle
-
+import emoji
 nltk.download("stopwords")
+nltk.download('punkt')
+
+def reduce_lengthening(text):
+    pattern = re.compile(r"(.)\1{2,}")
+    return pattern.sub(r"\1\1", text)
 
 
-
+def fix_spelling(reply):
+    return [reduce_lengthening(word) for word in reply]
 
 def reduce_repeated_chars(word):
     new_word = ""
@@ -226,14 +232,8 @@ def print_metrics():
     print("Total tweets: ", total_tweet_nr)
 
 
-emojis = dict()
+emojis = emoji.UNICODE_EMOJI_ALIAS
 
-def load_emoji_dictionary():
-    global emojis
-    with open("emoji_dictionary.json", "rb") as f:
-        emojis = json.load(f, encoding="utf-8")
-
-load_emoji_dictionary()
 
 
 def tokenize_emojis(reply):

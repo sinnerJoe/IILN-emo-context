@@ -39,7 +39,7 @@ def tf_idf(tweets_dicts):
     idf = {}
     for dic in tweets_dicts:
         freq = {}
-        [tweet1, tweet2, tweet3, aux] = dic["replies"]
+        [tweet1, tweet2, tweet3] = dic["replies"]
         for word_dic in tweet1:
             if word_dic["lemma"] not in freq:
                 freq[word_dic["lemma"]] = 1
@@ -62,7 +62,7 @@ def tf_idf(tweets_dicts):
             else:
                 idf[word] += 1
             if word not in tf[dic["emotion"]]:
-                tf[dic["emotion"]][word] = freq[word]
+                tf[dic["emotion"]][word] = freq[word] #frecventa cuvantului intr-o clasa de emotii
             else:    
                 tf[dic["emotion"]][word] += freq[word]
         
@@ -80,12 +80,12 @@ def tf_idf(tweets_dicts):
         for word in tf[emotion].keys():
             tf[emotion][word] *= idf[word]
     
-    s = json.dumps(tf)
-    open("tf-idf.json", "wt").write(s)
+    s = json.dumps(tf, ensure_ascii= False, indent=2)
+    open("tf-idf.json", "wt", encoding="utf-8", ).write(s)
     print(tf)
 
 
-#tf_idf(json.load(open("parsed_dataset.json", "rt")))
+tf_idf(json.load(open("parsed_dataset.json", "rt")))
 # import spacy
 # from spacy import displacy
 # from collections import Counter
@@ -213,4 +213,4 @@ def use_lesk(tweets_dicts):
 
 #emo_detection("Today I'm very happy")
 #use_lesk(json.load(open("parsed_dataset.json", "rt")))
-ner(json.load(open("parsed_dataset.json", "rt")))
+# ner(json.load(open("parsed_dataset.json", "rt")))

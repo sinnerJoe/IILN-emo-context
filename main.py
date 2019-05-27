@@ -30,12 +30,13 @@ with open("devsetwithlabels/dev.txt", encoding="utf-8") as file:
 
 def line_to_dict(line):
     res = dict()
-    replies = [utils.tokenize_emojis(reply) for reply in line[:-1]]
+    replies = [utils.fix_spelling(reply) for reply in line[:-1]]
+    replies = [utils.tokenize_emojis(reply) for reply in replies]
     pos_replies = map(nltk.pos_tag, replies)
 
     lemmatized_replies = []
     for reply in pos_replies:
-        objs = list(map(lambda arg: { "pos": arg[1], "word": utils.reduce_repeated_chars(arg[0]) }, reply))
+        objs = list(map(lambda arg: { "pos": arg[1], "word": utils.reduce_lengthening(arg[0]) }, reply))
         lemmatized_replies.append(objs)
     res["replies"] = lemmatized_replies
     res["emotion"] = line[3][0]
