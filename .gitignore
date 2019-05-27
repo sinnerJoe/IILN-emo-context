@@ -2,3 +2,4 @@ parsed_dataset.json
 tf-idf.json
 frequencies.json
 __pycache__
+bayes_prepared.json
