@@ -10,11 +10,17 @@ import gensim
 from gensim import corpora 
 import re
 import pickle
-
+import emoji
 nltk.download("stopwords")
+nltk.download('punkt')
 
-stop_words = set(nltk.corpus.stopwords.words('english'))
+def reduce_lengthening(text):
+    pattern = re.compile(r"(.)\1{2,}")
+    return pattern.sub(r"\1\1", text)
 
+
+def fix_spelling(reply):
+    return [reduce_lengthening(word) for word in reply]
 
 def reduce_repeated_chars(word):
     new_word = ""
@@ -104,18 +110,14 @@ def add_lemma(lemma, synonyms, database: dict, emotion):
     counter[emotion] += weight
 
 
-
-frequent_words = { 
-    "a", "an", "he", "she", "it", "you", "be", "the", "i", "u", "to", "from", "of", "your", "his", "her"
-    
-}
+stop_words = set(nltk.corpus.stopwords.words('english'))
 total_frequent_words_removed = 0
 def remove_frequent_words(replies):
     global total_frequent_words_removed 
     for reply in replies:
         i = 0
         while i < len(reply):
-            if reply[i]["lemma"] in frequent_words or reply[i]["word"].lower() in frequent_words:
+            if reply[i]["lemma"].lower() in stop_words:
                 del reply[i]
                 total_frequent_words_removed += 1
             else:
@@ -228,3 +230,28 @@ def print_metrics():
     print("Words without synonyms: ", words_without_synononyms)
     print("Capslock detected: ", capslock_detected)
     print("Total tweets: ", total_tweet_nr)
+
+
+emojis = emoji.UNICODE_EMOJI_ALIAS
+
+
+
+def tokenize_emojis(reply):
+    tokens = []
+    for i in range(0, len(reply)):
+        word = reply[i]
+        more_emojis = True
+        while more_emojis:
+            more_emojis = False
+            for j in range(0, len(word)):
+                if word[j] in emojis:
+                    more_emojis = True
+                    if j > 0:
+                        tokens.append(word[:j])
+                        word = word[j:] 
+                    tokens.append(emojis[word[0]])
+                    word = word[1:] if len(word) > 0 else ""
+                    break
+        if len(word) > 0:
+            tokens.append(word)
+    return tokens

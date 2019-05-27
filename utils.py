@@ -1,7 +1,6 @@
 import nltk
 import math
 import json
-import requests
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
 from nltk.corpus import wordnet as wn
@@ -40,7 +39,7 @@ def tf_idf(tweets_dicts):
     idf = {}
     for dic in tweets_dicts:
         freq = {}
-        [tweet1, tweet2, tweet3, aux] = dic["replies"]
+        [tweet1, tweet2, tweet3] = dic["replies"]
         for word_dic in tweet1:
             if word_dic["lemma"] not in freq:
                 freq[word_dic["lemma"]] = 1
@@ -63,7 +62,7 @@ def tf_idf(tweets_dicts):
             else:
                 idf[word] += 1
             if word not in tf[dic["emotion"]]:
-                tf[dic["emotion"]][word] = freq[word]
+                tf[dic["emotion"]][word] = freq[word] #frecventa cuvantului intr-o clasa de emotii
             else:    
                 tf[dic["emotion"]][word] += freq[word]
         
@@ -81,12 +80,12 @@ def tf_idf(tweets_dicts):
         for word in tf[emotion].keys():
             tf[emotion][word] *= idf[word]
     
-    s = json.dumps(tf)
-    open("tf-idf.json", "wt").write(s)
+    s = json.dumps(tf, ensure_ascii= False, indent=2)
+    open("tf-idf.json", "wt", encoding="utf-8", ).write(s)
     print(tf)
 
 
-#tf_idf(json.load(open("parsed_dataset.json", "rt")))
+tf_idf(json.load(open("parsed_dataset.json", "rt")))
 # import spacy
 # from spacy import displacy
 # from collections import Counter
@@ -189,27 +188,29 @@ def use_lesk(tweets_dicts):
         for word in sentence:
             print(word, simplified_lesk(word, set(sentence)))
 
-def emo_detection(text):
-    response = requests.post(url = "http://text-processing.com/api/sentiment/", data = {"text": text}).json()["probability"]
-    # response = requests.post("https://japerk-text-processing.p.rapidapi.com/sentiment/",
-    #                         headers={
-    #                             "X-RapidAPI-Host": "japerk-text-processing.p.rapidapi.com",
-    #                             "X-RapidAPI-Key": "ddac0762b2mshf2a1e97a045686ep1ee811jsn9c89f803eddf",
-    #                             "Content-Type": "application/x-www-form-urlencoded"
-    #                         },
-    #                         data={
-    #                             "language": "english",
-    #                             "text": text
-    #                         }
-    #                         ).json()
-    maxi = max( [response["neg"], response["neutral"], response["pos"]])
-    for key, value in response.items():
-        if value == maxi:
-            emo = key
-    return emo
+# def emo_detection(text):
+#     response = requests.post(url = "http://text-processing.com/api/sentiment/", data = {"text": text}).json()["probability"]
+#     # response = requests.post("https://japerk-text-processing.p.rapidapi.com/sentiment/",
+#     #                         headers={
+#     #                             "X-RapidAPI-Host": "japerk-text-processing.p.rapidapi.com",
+#     #                             "X-RapidAPI-Key": "ddac0762b2mshf2a1e97a045686ep1ee811jsn9c89f803eddf",
+#     #                             "Content-Type": "application/x-www-form-urlencoded"
+#     #                         },
+#     #                         data={
+#     #                             "language": "english",
+#     #                             "text": text
+#     #                         }
+#     #                         ).json()
+#     maxi = max( [response["neg"], response["neutral"], response["pos"]])
+#     for key, value in response.items():
+#         if value == maxi:
+#             emo = key
+#     return emo
     
 
 # use_lesk(json.load(open("parsed_dataset.json", "rt")))
 # ner(json.load(open("parsed_dataset.json", "rt")))
 
 #emo_detection("Today I'm very happy")
+#use_lesk(json.load(open("parsed_dataset.json", "rt")))
+# ner(json.load(open("parsed_dataset.json", "rt")))

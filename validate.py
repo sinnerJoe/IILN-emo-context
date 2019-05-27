@@ -71,19 +71,3 @@ for i in range(0, len(dataset)):
 
 print("The dataset is valid")
 
-# def check_entry(entry):
-#     if "replies" not in entry:
-#         raise Exception("No replies in the entry")
-
-    
-#     if len(entry["replies"]) != 3:
-#         raise Exception("Wrong number of replies")
-
-#     for member in ["emotion", "sentiments", "capslock", "topics"]:
-#         if member not in entry:
-#             raise Exception("The member {} is absent".format(member))
-
-#     for reply in entry["replies"]:
-#         for wordObj in reply:
-#             for member in ["pos", "word", "lemma", "synony"]
-
