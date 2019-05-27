@@ -5,6 +5,7 @@ from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
 from nltk.corpus import wordnet as wn
 from nltk.wsd import lesk
+import operator
 
 # nltk.download('maxent_ne_chunker')
 # nltk.download('words')
@@ -57,12 +58,16 @@ def tf_idf(tweets_dicts):
                 freq[word_dic["lemma"]] += 1
         
         for word in freq.keys():
-            if word not in idf:
-                idf[word] = 1
-            else:
-                idf[word] += 1
+            # if word not in idf:
+            #     idf[word] = 1
+            # else:
+            #     idf[word] += 1
             if word not in tf[dic["emotion"]]:
                 tf[dic["emotion"]][word] = freq[word] #frecventa cuvantului intr-o clasa de emotii
+                if word not in idf:
+                    idf[word] = 1
+                else:
+                    idf[word] += 1
             else:    
                 tf[dic["emotion"]][word] += freq[word]
         
@@ -74,30 +79,49 @@ def tf_idf(tweets_dicts):
             tf[emotion][word] /= emo[emotion]
     
     for word in idf.keys():
-        idf[word] = math.log(len(tweets_dicts)/idf[word])
+        idf[word] = math.log(4/idf[word])
+        # idf[word] = math.log(len(tweets_dicts)/idf[word])
 
     for emotion in tf.keys():
         for word in tf[emotion].keys():
-            tf[emotion][word] *= idf[word]
-    
+            tf[emotion][word] *= idf[word]*6
+    tf_idf = {}
+    for emotion in tf.keys():
+        tf_idf[emotion] = sorted(tf[emotion].items(), key=operator.itemgetter(1), reverse = True)[:2]
     s = json.dumps(tf, ensure_ascii= False, indent=2)
     open("tf-idf.json", "wt", encoding="utf-8", ).write(s)
-    print(tf)
+    print(tf_idf)
 
 
-tf_idf(json.load(open("parsed_dataset.json", "rt")))
+tf_idf(json.load(open("parsed_dataset.json", "rt", encoding="utf-8")))
 # import spacy
 # from spacy import displacy
 # from collections import Counter
 # import en_core_web_sm
 # nlp = en_core_web_sm.load()
 
+def bayes(sentence):
+    emotion_probability = {"happy" : 0.1, "angry" : 0.1, "sad" : 0.1, "others" : 0.7}
+    tf_idf = json.load(open("tf-idf.json", "rt", encoding="utf-8"))
+    for emotion in emotion_probability:
+        for word in sentence.split():
+            if word not in tf_idf[emotion] or tf_idf[emotion][word] == 0:
+                print(emotion, word, 0)
+                emotion_probability[emotion] *= 0.0001
+            else:
+                print(emotion, word, tf_idf[emotion][word])
+                emotion_probability[emotion] *= tf_idf[emotion][word]
+    print(emotion_probability)
+    return sorted(emotion_probability.items(), key=operator.itemgetter(1), reverse = True)[0][0]
+
+print(bayes("i don't know"))
+
 def ner(tweets_dicts):
     labels= {"sentences":0,}
     for dic in tweets_dicts:
         labels["sentences"] += 1
         
-        [tweet1, tweet2, tweet3, aux] = dic["replies"]
+        [tweet1, tweet2, tweet3] = dic["replies"]
         sentence = []
         for word_dic in tweet1:
             sentence.append( (word_dic["word"], word_dic["pos"]) )
@@ -129,8 +153,8 @@ def ner(tweets_dicts):
        
         for chunk in nltk.ne_chunk(sentence):
             if hasattr(chunk, 'label') and chunk.label:
-                # name_value = ' '.join(child[0] for child in chunk.leaves())
-                # print(name_value, chunk.label())
+                name_value = ' '.join(child[0] for child in chunk.leaves())
+                print(name_value, chunk.label())
                 if chunk.label() in labels:
                     labels[chunk.label()] += 1
                 else:
@@ -213,4 +237,4 @@ def use_lesk(tweets_dicts):
 
 #emo_detection("Today I'm very happy")
 #use_lesk(json.load(open("parsed_dataset.json", "rt")))
-# ner(json.load(open("parsed_dataset.json", "rt")))
+#ner(json.load(open("parsed_dataset.json", "rt", encoding="utf-8")))
