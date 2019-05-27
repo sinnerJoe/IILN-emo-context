@@ -1,4 +1,5 @@
 import re
+import json
 
 f = open("slang_dict.txt", "r")
 key = ""
@@ -23,3 +24,6 @@ for line in f:
         key = ""
 
 print(dic)
+
+with open('parsed_slang_dict.txt', 'w') as outfile:  
+    json.dump(dic, outfile)
