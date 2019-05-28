@@ -1,4 +1,4 @@
-parsed_dataset.json
+parsed_dataset*
 tf-idf.json
 frequencies.json
 __pycache__
