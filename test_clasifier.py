@@ -9,7 +9,7 @@ import numpy as np
 from prepare_for_bayes import prepare_test_data_row
 
 
-def load_from_csv_file(path="starterkitdata/train.txt", has_emotions = True):
+def load_from_csv_file(path="starterkitdata/train.txt", delete_emotions = True):
     data_rows = []
     with open(path, encoding="utf-8") as file:
         next(file)
@@ -18,7 +18,7 @@ def load_from_csv_file(path="starterkitdata/train.txt", has_emotions = True):
             del split[0]
             if '\n' in split[-1]:
                 split[-1] = split[-1][:-1]
-            if has_emotions:
+            if delete_emotions:
                 del split[-1] #use only if dataset has assigned emotions
             data_rows.append(split)
     return [prepare_test_data_row(row) for row in data_rows]
@@ -35,8 +35,7 @@ result = load_from_csv_file("devsetwithlabels/dev.txt")
 result = [utils2.bayes(flatten(line["replies"])) for line in result]
 
 wrong = 0
-with open("parsed_dataset.json", encoding="utf-8") as file:
-    training_set = json.load(file)
+training_set = load_from_csv_file("devsetwithlabels/dev.txt", delete_emotions=False)
 
 for i in range(0, len(training_set)):
     if(training_set[i]["emotion"] != result[i]):

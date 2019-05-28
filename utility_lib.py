@@ -14,6 +14,10 @@ import pickle
 import emoji
 nltk.download("stopwords")
 nltk.download('punkt')
+import functools
+import operator
+
+def flatten(lst): return list(functools.reduce(operator.iconcat, lst, []))
 
 def reduce_lengthening(text):
     pattern = re.compile(r"(.)\1{2,}")
@@ -198,11 +202,7 @@ def calculate_dictionary(train_data):
     print("Possible topics", possible_topics)
 
 
-def flatten(lst):
-    res = []
-    for el in lst:
-        res.extend(el)
-    return res
+
 
 def lda_topic_detect(instance):
     global possible_topics

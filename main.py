@@ -15,8 +15,8 @@ nltk.download('words')
 
 parsed_lines = []
 
-with open("devsetwithlabels/dev.txt", encoding="utf-8") as file:
-    replacer = re.compile("^d+\t([^\t]+)\t([^\t]+)\t([^\t]+)?[ \t](angry|sad|other|happy)$")
+with open("starterkitdata/train.txt", encoding="utf-8") as file:
+    # replacer = re.compile("^d+\t([^\t]+)\t([^\t]+)\t([^\t]+)?[ \t](angry|sad|other|happy)$")
     next(file)
     for line in file:
         split = line.split("\t")
@@ -32,7 +32,7 @@ with open("devsetwithlabels/dev.txt", encoding="utf-8") as file:
 
 
 parsed_lines = map(lambda quadruplet: list(map(nltk.word_tokenize, quadruplet)), parsed_lines)
-parsed_lines = list(map(utlis.line_to_dict, parsed_lines))
+parsed_lines = list(map(utils.line_to_dict, parsed_lines))
 
 
 
@@ -42,9 +42,9 @@ for line in parsed_lines:
     utils.lemmatize(line)
     utils.remove_frequent_words(line["replies"])
     utils.remove_punctuation(line)
-    utils.best_synonym(line["replies"])
-    utils.detect_capslock(line)
-    utils.ner_words(line)
+    # utils.best_synonym(line["replies"])
+    # utils.detect_capslock(line)
+    # utils.ner_words(line)
     for reply in line["replies"]:
         for wordObj in reply:
             print(wordObj)
