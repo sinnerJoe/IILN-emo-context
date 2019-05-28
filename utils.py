@@ -58,16 +58,16 @@ def tf_idf(tweets_dicts):
                 freq[word_dic["lemma"]] += 1
         
         for word in freq.keys():
-            # if word not in idf:
-            #     idf[word] = 1
-            # else:
-            #     idf[word] += 1
+            if word not in idf:
+                idf[word] = 1
+            else:
+                idf[word] += 1
             if word not in tf[dic["emotion"]]:
                 tf[dic["emotion"]][word] = freq[word] #frecventa cuvantului intr-o clasa de emotii
-                if word not in idf:
-                    idf[word] = 1
-                else:
-                    idf[word] += 1
+                # if word not in idf:
+                #     idf[word] = 1
+                # else:
+                #     idf[word] += 1
             else:    
                 tf[dic["emotion"]][word] += freq[word]
         
@@ -79,8 +79,8 @@ def tf_idf(tweets_dicts):
             tf[emotion][word] /= emo[emotion]
     
     for word in idf.keys():
-        idf[word] = math.log(4/idf[word])
-        # idf[word] = math.log(len(tweets_dicts)/idf[word])
+        # idf[word] = math.log(4/idf[word])
+        idf[word] = math.log(len(tweets_dicts)/idf[word])
 
     for emotion in tf.keys():
         for word in tf[emotion].keys():
