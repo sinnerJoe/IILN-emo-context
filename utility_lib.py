@@ -65,10 +65,17 @@ def best_synonym(replies):
             print("Except ", words_str[i])
 
 
+def eliminate_punctation(sentence):
+    res = []
+    for word in sentence:
+        res.extend(re.findall(r"[\w]+", word))
+    return res
+
 def line_to_dict(line, with_emotion = True):
     res = dict()
     replies_without_emotions = line[:-1] if with_emotion else line
     replies = [fix_spelling(reply) for reply in replies_without_emotions]
+    replies = [eliminate_punctation(reply) for reply in replies]
     replies = [tokenize_emojis(reply) for reply in replies]
     pos_replies = map(nltk.pos_tag, replies)
 
