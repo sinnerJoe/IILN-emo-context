@@ -1,6 +1,8 @@
 
-import json
-
+import json 
+import re
+import nltk
+import utility_lib as utils
 emotion_labels = {
     "happy": 0,
     "sad": 1,
@@ -43,7 +45,24 @@ with open("parsed_dataset.json", "rt", encoding="utf-8") as f:
 with open("tf-idf.json", "rt", encoding="utf-8") as f:
     tf_idf_dataset = json.load(f)
 
-data = prepare_data(parsed_dataset, tf_idf_dataset)
-with open("bayes_prepared.json", "w", encoding="utf-8") as f:
-    json.dump(data, f, indent=2)
+# data = prepare_data(parsed_dataset, tf_idf_dataset)
+# with open("bayes_prepared.json", "w", encoding="utf-8") as f:
+#     json.dump(data, f, indent=2)
+
+
+
+def prepare_test_data_row(data_row:list):
+    tokenized_replies = [nltk.word_tokenize(reply) for reply in data_row]
+    line_dict = utils.line_to_dict(tokenized_replies, with_emotion=False)
+
+    utils.lemmatize(line_dict)
+    utils.remove_frequent_words(line_dict["replies"])
+    utils.remove_punctuation(line_dict)
+    # utils.best_synonym(line_dict["replies"])
+
+    for reply in line_dict["replies"]:
+            for wordObj in reply:
+                utils.find_synonyms(wordObj)
+    return line_dict
+
 

@@ -92,29 +92,36 @@ def tf_idf(tweets_dicts):
     open("tf-idf.json", "wt", encoding="utf-8", ).write(s)
     print(tf_idf)
 
-
-tf_idf(json.load(open("parsed_dataset.json", "rt", encoding="utf-8")))
+if __name__ == "__main__":
+    tf_idf(json.load(open("parsed_dataset.json", "rt", encoding="utf-8")))
 # import spacy
 # from spacy import displacy
 # from collections import Counter
 # import en_core_web_sm
 # nlp = en_core_web_sm.load()
 
-def bayes(sentence):
-    emotion_probability = {"happy" : 0.1, "angry" : 0.1, "sad" : 0.1, "others" : 0.7}
+def find_best_synonym(tf_idf_emotion:dict, synonyms):
+    results = []
+    for syn in synonyms:
+        results.append(tf_idf_emotion.get(syn, 0))
+    
+    return max(results) if len(results) > 0 else 0
+
+def bayes(word_list):
+    emotion_probability = {"happy" : 0.05, "angry" : 0.05, "sad" : 0.05, "others" : 0.85}
     tf_idf = json.load(open("tf-idf.json", "rt", encoding="utf-8"))
     for emotion in emotion_probability:
-        for word in sentence.split():
-            if word not in tf_idf[emotion] or tf_idf[emotion][word] == 0:
-                print(emotion, word, 0)
-                emotion_probability[emotion] *= 0.0001
+        for word in word_list:
+            lemma = word["lemma"]
+            if lemma not in tf_idf[emotion] or tf_idf[emotion][lemma] == 0:
+                # print(emotion, word, 0)
+                emotion_probability[emotion] += find_best_synonym(tf_idf[emotion], word["synonyms"]) ** 2
             else:
-                print(emotion, word, tf_idf[emotion][word])
-                emotion_probability[emotion] *= tf_idf[emotion][word]
-    print(emotion_probability)
+                # print(emotion, word, tf_idf[emotion][word])
+                emotion_probability[emotion] += tf_idf[emotion][lemma] ** 2
+    # print(emotion_probability)
     return sorted(emotion_probability.items(), key=operator.itemgetter(1), reverse = True)[0][0]
 
-print(bayes("i love you"))
 
 def ner(tweets_dicts):
     labels= {"sentences":0,}

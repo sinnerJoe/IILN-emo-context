@@ -3,7 +3,8 @@ import nltk
 import math
 import json
 from nltk.wsd import lesk
-from nltk.stem import WordNetLemmatizer
+# from nltk.stem import WordNetLemmatizer
+from nltk import WordNetLemmatizer
 from nltk.corpus import wordnet
 from itertools import chain
 import gensim
@@ -63,8 +64,36 @@ def best_synonym(replies):
         except:
             print("Except ", words_str[i])
 
+
+def line_to_dict(line, with_emotion = True):
+    res = dict()
+    replies_without_emotions = line[:-1] if with_emotion else line
+    replies = [fix_spelling(reply) for reply in replies_without_emotions]
+    replies = [tokenize_emojis(reply) for reply in replies]
+    pos_replies = map(nltk.pos_tag, replies)
+
+    lemmatized_replies = []
+    for reply in pos_replies:
+        objs = list(
+            map(lambda arg: {"pos": arg[1], "word": arg[0]}, reply))
+        lemmatized_replies.append(objs)
+    res["replies"] = lemmatized_replies
+    if with_emotion:
+        res["emotion"] = line[3][0]
+    return res
+
+
+lemmatizer = WordNetLemmatizer()
+def lemmatize(line_dict):
+    for reply in line_dict["replies"]:
+        for wordObj in reply:
+            # print(wordObj)
+            wordObj["lemma"] = lemmatizer.lemmatize(
+                wordObj["word"].lower(), get_wordnet_pos(wordObj["pos"]))
+
+
 words_without_synononyms = 0
-def populate_synonym_db(wordObj, database: dict, emotion):
+def find_synonyms(wordObj):
     global words_without_synononyms
     synonyms = wordnet.synsets(wordObj["lemma"])
     
@@ -72,42 +101,8 @@ def populate_synonym_db(wordObj, database: dict, emotion):
     wordObj["synonyms"] = list(set(lemmas))
     if len(wordObj["synonyms"]) == 0:
         words_without_synononyms += 1
-    add_lemma(wordObj["lemma"], wordObj["synonyms"], database, emotion)
+    # add_lemma(wordObj["lemma"], wordObj["synonyms"], database, emotion)
 
-
-def add_lemma(lemma, synonyms, database: dict, emotion):
-    weight = 1
-    if lemma in database:
-            if isinstance(database[lemma], str):
-                weight = 0.8
-                counter = database[database[lemma]]
-            else:
-                counter = database[lemma]
-    else:
-        presentSynonyms = [
-            synonym for synonym in synonyms if synonym in database]
-        if len(presentSynonyms) == 0:
-            counter = {
-                "angry": 0,
-                "others": 0,
-                "happy": 0,
-                "sad": 0
-            }
-            database[lemma] = counter
-        else:
-            weight = 0.8
-            counter = None
-            while counter == None:
-                foundSyns = []
-                for syn in presentSynonyms:
-                    if not isinstance(database[syn], str):
-                        counter = database[syn]
-                        database[lemma] = syn
-                        break
-                    foundSyns.append(database[syn])
-                presentSynonyms = foundSyns
-
-    counter[emotion] += weight
 
 
 stop_words = set(nltk.corpus.stopwords.words('english'))
@@ -161,8 +156,8 @@ def ner_words(line):
         for chunk in ner_tags:
             if hasattr(chunk, "label") and chunk.label:
                 name_value = ' '.join(child[0] for child in chunk.leaves())
-                print("------------------------------------")
-                print(name_value, chunk.label())
+                # print("------------------------------------")
+                # print(name_value, chunk.label())
                 for i in range(0, len(reply)):
                     wordObj = reply[i]
                     if wordObj['word'] == name_value:   
