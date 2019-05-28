@@ -16,7 +16,7 @@ nltk.download('words')
 parsed_lines = []
 
 with open("starterkitdata/train.txt", encoding="utf-8") as file:
-    # replacer = re.compile("^d+\t([^\t]+)\t([^\t]+)\t([^\t]+)?[ \t](angry|sad|other|happy)$")
+    replacer = re.compile("^d+\t([^\t]+)\t([^\t]+)\t([^\t]+)?[ \t](angry|sad|other|happy)$")
     next(file)
     for line in file:
         split = line.split("\t")
@@ -47,7 +47,7 @@ for line in parsed_lines:
     # utils.ner_words(line)
     for reply in line["replies"]:
         for wordObj in reply:
-            print(wordObj)
+            # print(wordObj)
             utils.find_synonyms(wordObj)
 
 utils.calculate_dictionary(parsed_lines)
