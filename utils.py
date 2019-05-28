@@ -114,7 +114,7 @@ def bayes(sentence):
     print(emotion_probability)
     return sorted(emotion_probability.items(), key=operator.itemgetter(1), reverse = True)[0][0]
 
-print(bayes("i don't know"))
+print(bayes("i love you"))
 
 def ner(tweets_dicts):
     labels= {"sentences":0,}
