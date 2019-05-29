@@ -68,6 +68,21 @@ def best_synonym(replies):
         except:
             print("Except ", words_str[i])
 
+with open('parsed_slang_dict.json') as json_file:  
+    slang_dict = json.load(json_file)
+
+def eliminate_slang(sentence):
+    global slang_dict
+    repl = 0
+    rez = []
+    for word in sentence:
+        if word.upper() in slang_dict:
+            rez.extend(eliminate_punctation(slang_dict[word.upper()].split()))
+            repl += 1
+            # print(word, eliminate_punctation(slang_dict[word.upper()].split()))
+        else:
+            rez.append(word)
+    return rez
 
 el_punct_regex = re.compile(r"[,.!?_:+=*/\\;\[\]{}()@/$^\"]")
 def eliminate_punctation(sentence):
@@ -83,6 +98,7 @@ def line_to_dict(line, with_emotion = True):
     replies = [fix_spelling(reply) for reply in replies_without_emotions]
     replies = [eliminate_punctation(reply) for reply in replies]
     replies = [tokenize_emojis(reply) for reply in replies]
+    replies = [eliminate_slang(reply) for reply in replies]
     pos_replies = map(nltk.pos_tag, replies)
 
     lemmatized_replies = []
