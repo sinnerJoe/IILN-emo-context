@@ -25,5 +25,5 @@ for line in f:
 
 print(dic)
 
-with open('parsed_slang_dict.txt', 'w') as outfile:  
+with open('parsed_slang_dict.json', 'w') as outfile:  
     json.dump(dic, outfile)
