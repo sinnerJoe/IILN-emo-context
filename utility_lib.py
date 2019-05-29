@@ -69,10 +69,12 @@ def best_synonym(replies):
             print("Except ", words_str[i])
 
 
+el_punct_regex = re.compile(r"[,.!?_:+=*/\\;\[\]{}()@/$^\"]")
 def eliminate_punctation(sentence):
     res = []
     for word in sentence:
-        res.extend(re.findall(r"[\w]+", word))
+        split_words = filter(lambda lst: len(lst) > 0, el_punct_regex.split(word))
+        res.extend(list(split_words))
     return res
 
 def line_to_dict(line, with_emotion = True):

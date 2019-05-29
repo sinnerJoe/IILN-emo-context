@@ -3,6 +3,9 @@ import json
 import re
 import nltk
 import utility_lib as utils
+import operator
+
+import functools
 emotion_labels = {
     "happy": 0,
     "sad": 1,
@@ -67,3 +70,54 @@ def prepare_test_data_row(data_row:list):
     return line_dict
 
 
+def tf_idf_alternative(tweet_convos):
+    word_occurences = {
+        "happy": {},
+        "sad": {},
+        "angry": {},
+        "others": {}
+    }
+
+    
+    def calculate_emotion_prob(emotion): 
+        return functools.reduce(lambda acc, convo: acc if convo["emotion"] != emotion else acc + 1, tweet_convos, 0) / len(tweet_convos)
+        
+    emo_probs = {
+        "happy": calculate_emotion_prob("happy"),
+        "sad": calculate_emotion_prob("sad"),
+        "angry": calculate_emotion_prob("angry"),
+        "others": calculate_emotion_prob("others")
+    }
+
+    total_words_per_category = {
+        "happy": 0,
+        "sad": 0,
+        "angry": 0,
+        "others": 0
+    }
+    
+    for convo in tweet_convos:
+        emotion = convo["emotion"]
+        for wordObj in utils.flatten(convo["replies"]):
+            lemma = wordObj["lemma"]
+            word_occurences[emotion][lemma] = word_occurences[emotion].get(lemma, 0) + 1
+            total_words_per_category[emotion] += 1
+    
+    total_unique_words = set()
+    for word_dict in word_occurences.values():
+        total_unique_words.update(set(word_dict.keys()))
+    total_unique_words = len(total_unique_words)
+
+    for emotion in word_occurences: #likelyhood
+        for word in word_occurences[emotion]:
+            word_occurences[emotion][word] /= total_words_per_category[emotion]
+    
+    
+    
+    s = json.dumps(word_occurences, ensure_ascii=False, indent=2)
+    open("tf-idf.json", "wt", encoding="utf-8", ).write(s)
+    print(word_occurences)
+
+
+if __name__ == "__main__":
+    tf_idf_alternative(json.load(open("parsed_dataset.json", "rt", encoding="utf-8")))
