@@ -35,13 +35,13 @@ result = load_from_csv_file("devsetwithlabels/dev.txt")
 result = [utils2.bayes(flatten(line["replies"])) for line in result]
 
 wrong = 0
-training_set = load_from_csv_file("devsetwithlabels/dev.txt", delete_emotions=False)
+expectation_set = load_from_csv_file("devsetwithlabels/dev.txt", delete_emotions=False)
 
-for i in range(0, len(training_set)):
-    if(training_set[i]["emotion"] != result[i]):
+for i in range(0, len(expectation_set)):
+    if(expectation_set[i]["emotion"] != result[i]):
         wrong += 1
 
-total = len(training_set)
+total = len(expectation_set)
 right = total - wrong
 
 
@@ -60,7 +60,7 @@ def transform_output_data(output):
         classified_arr[baseline.emotion2label[el]] = 1
         result.append(classified_arr)
     return np.array(result)
-expected = transform_output_data([el["emotion"] for el in training_set])
+expected = transform_output_data([el["emotion"] for el in expectation_set])
 result = transform_output_data(result)
 
 
