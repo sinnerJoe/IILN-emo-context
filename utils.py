@@ -105,12 +105,12 @@ def find_best_synonym(tf_idf_emotion:dict, synonyms):
     for syn in synonyms:
         results.append(tf_idf_emotion.get(syn, 0))
     
-    return max(results) if len(results) > 0 else 0.001
+    return max(results)*10_000 if len(results) > 0 else 0.0000000000001
 
 
 tf_idf = json.load(open("tf-idf.json", "rt", encoding="utf-8"))
 def bayes(word_list):
-    emotion_coefficients = {"happy" : 0.05, "angry" : 0.05, "sad" : 0.05, "others" : 0.85}
+    emotion_coefficients = {"happy" : 0.3, "angry" : 0.3, "sad" : 0.3, "others" : 0.5}
     emotion_probability = {"happy" : 1, "angry" : 1, "sad" : 1, "others" : 1}
     
     for emotion in emotion_probability:

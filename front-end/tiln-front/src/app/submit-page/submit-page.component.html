@@ -1,0 +1,39 @@
+
+<div style="width: 80%; margin-left: auto; margin-right: auto; min-width: 600px">
+
+<mat-card style="opacity: 0.9">
+  <mat-card-title>
+    Tweeter conversation classification
+  </mat-card-title>
+  <mat-card-content>
+    <mat-label>
+      Insert a 3 tweet conversation
+    </mat-label>
+    <div class="column">
+
+      <mat-form-field class="block">
+          <input type="text" matInput [(ngModel)]="firstReply" placeholder="1st tweet">
+        </mat-form-field>
+        <!-- <mat-divider></mat-divider> -->
+        <mat-form-field  class="block">
+          <input matInput placeholder="2nd tweet">
+        </mat-form-field>
+        <!-- <mat-divider></mat-divider> -->
+        <mat-form-field  class="block">
+          <input matInput placeholder="3rd tweet">
+        </mat-form-field>
+       <button mat-raised-button color="accent" (click)="sendData()">
+         Classify
+       </button>
+
+    </div>
+  </mat-card-content>
+
+</mat-card>
+
+<mat-card *ngIf="response" style="margin-top: 2em">
+  <mat-card-title>
+    Detected emotion: {{response.emotion}}
+  </mat-card-title>
+  </mat-card>
+</div>

@@ -32,10 +32,12 @@ def load_from_json_file(path="starterkitdata/train.txt"):
 def flatten(lst): return list(functools.reduce(operator.iconcat, lst, []))
 
 result = load_from_csv_file("devsetwithlabels/dev.txt")
+# result = load_from_json_file("parsed_dataset.json")
 result = [utils2.bayes(flatten(line["replies"])) for line in result]
 
 wrong = 0
 expectation_set = load_from_csv_file("devsetwithlabels/dev.txt", delete_emotions=False)
+# expectation_set = load_from_json_file("parsed_dataset.json")
 
 for i in range(0, len(expectation_set)):
     if(expectation_set[i]["emotion"] != result[i]):
